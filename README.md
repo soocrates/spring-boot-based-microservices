@@ -198,7 +198,7 @@ This will start all microservices on their respective ports
                 --memory=4g \
                 --cpus=4 \
                 --disk-size=30g \
-                --kubernetes-version=v1.27 \
+                --kubernetes-version=v1.31.0 \
                 --driver=docker
 ```
 ```html
@@ -241,6 +241,10 @@ This will start all microservices on their respective ports
 4. Let's build the images
 ```shell
     sh build-images.sh      
+```
+or 
+```shell
+    bash build-images.sh      
 ```
 ```html
 Building Docker images for Kubernetes using Minikube...
@@ -308,7 +312,7 @@ You can also get Table view
 ```
 6. Let's start the Microservices
 ```shell
-    Tilt up
+    tilt up
 ```
 ```html
 Tilt started on http://localhost:10350/
@@ -340,7 +344,7 @@ course-postgres            2025-03-11T10:37:08Z
 (Tiltfile)                 2025-03-11T10:37:08Z
 ```
 ```shell
-    kubectl get pods,svc,ingress
+    kubectl get pods,svc,ing
 ```
 ```markdown
 NAME                                            READY   STATUS              RESTARTS   AGE
