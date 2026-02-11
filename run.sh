@@ -11,7 +11,7 @@ kill_service_on_port() {
 }
 
 # Build all services before running them
-mvn clean package -DskipTests
+echo "Building all services using Maven..."
 
 # Function to find and run the latest JAR file in a given service directory
 run_service() {

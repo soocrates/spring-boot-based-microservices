@@ -1,10 +1,12 @@
 services:
   course:
-    build: ../microservices/course-service
+    build:
+      context: ..
+      dockerfile: microservices/course-service/Dockerfile
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar" #maven will place jar in BOOT-INF as per dep mentioned in pom. This will instruct the JVM to run the OpenTelemetry Java agent from the path.
+      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar"
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=none
@@ -16,16 +18,15 @@ services:
         fluentd-address: 127.0.0.1:24224
     networks:
       - shared-network
-    #depends_on:
-     # postgres:
-      #  condition: service_healthy
 
   review:
-    build: ../microservices/review-service
+    build:
+      context: ..
+      dockerfile: microservices/review-service/Dockerfile
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar" #maven will place jar in BOOT-INF as per dep mentioned in pom. This will instruct the JVM to run the OpenTelemetry Java agent from the path.
+      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar"
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=none
@@ -37,25 +38,23 @@ services:
         fluentd-address: 127.0.0.1:24224
     networks:
       - shared-network
-    #depends_on:
-     # mongodb:
-      #  condition: service_healthy
 
   course-composite:
-    build: ../microservices/course-composite-service
+    build:
+      context: ..
+      dockerfile: microservices/course-composite-service/Dockerfile
     mem_limit: 512m
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar" #maven will place jar in BOOT-INF as per dep mentioned in pom. This will instruct the JVM to run the OpenTelemetry Java agent from the path.
+      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar"
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=none
       - OTEL_METRIC_EXPORT_INTERVAL=15000
       - OTEL_INSTRUMENTATION_SPRING_WEB_EXCLUDE_PATTERNS=/actuator/prometheus
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4318
-
     logging:
       driver: fluentd
       options:
@@ -64,13 +63,15 @@ services:
       - shared-network
 
   gateway-service:
-    build: ../spring-cloud/gateway-service
+    build:
+      context: ..
+      dockerfile: spring-cloud/gateway-service/Dockerfile
     mem_limit: 512m
     ports:
       - "9000:9000"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar" #maven will place jar in BOOT-INF as per dep mentioned in pom. This will instruct the JVM to run the OpenTelemetry Java agent from the path.
+      - JAVA_TOOL_OPTIONS="-javaagent:/application/BOOT-INF/lib/opentelemetry-javaagent-2.13.3.jar"
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_METRICS_EXPORTER=none
       - OTEL_LOGS_EXPORTER=none

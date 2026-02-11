@@ -1,25 +1,19 @@
-FROM eclipse-temurin:17.0.5_8-jre-focal as builder
-WORKDIR extracted
+FROM maven:3.9.1-eclipse-temurin-17 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn -f util/pom.xml clean install -DskipTests
+RUN mvn -pl microservices/review-service clean package -DskipTests
 
-ADD ./target/*.jar app.jar
-
+FROM eclipse-temurin:17.0.5_8-jre-focal AS extractor
+WORKDIR /extracted
+COPY --from=builder /app/microservices/review-service/target/*.jar app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
 FROM eclipse-temurin:17.0.5_8-jre-focal
-WORKDIR application
-
-# Copy the dependencies layer from the builder stage
-COPY --from=builder extracted/dependencies/ ./
-# Copy the Spring Boot loader layer from the builder stage
-COPY --from=builder extracted/spring-boot-loader/ ./
-# Copy the snapshot dependencies layer from the builder stage
-COPY --from=builder extracted/snapshot-dependencies/ ./
-# Copy the application layer from the builder stage
-COPY --from=builder extracted/application/ ./
-
-# Expose port 8080
+WORKDIR /application
+COPY --from=extractor /extracted/dependencies/ ./
+COPY --from=extractor /extracted/spring-boot-loader/ ./
+COPY --from=extractor /extracted/snapshot-dependencies/ ./
+COPY --from=extractor /extracted/application/ ./
 EXPOSE 8080
-
-# Set the entry point to launch the application
 ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
-
